@@ -1,8 +1,9 @@
 /*
- * QuickJS Javascript Engine
+ * Neodymium/QuickJS Javascript Engine
  *
  * Copyright (c) 2017-2025 Fabrice Bellard
  * Copyright (c) 2017-2025 Charlie Gordon
+ * Copyright (c) 2026 Coni S
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -60926,9 +60927,16 @@ static JSValue js_atomics_wait(JSContext *ctx,
         ret = 0;
     } else {
         /* XXX: use clock monotonic */
+#ifdef __APPLE__
+        struct timeval tv;
+        gettimeofday(&tv, NULL);
+        ts.tv_sec = tv.tv_sec + (timeout / 1000);
+        ts.tv_nsec = (tv.tv_usec * 1000) + ((timeout % 1000) * 1000000);
+#else
         clock_gettime(CLOCK_REALTIME, &ts);
         ts.tv_sec += timeout / 1000;
         ts.tv_nsec += (timeout % 1000) * 1000000;
+#endif
         if (ts.tv_nsec >= 1000000000) {
             ts.tv_nsec -= 1000000000;
             ts.tv_sec++;
