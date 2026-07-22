@@ -7224,9 +7224,11 @@ void JS_ComputeMemoryUsage(JSRuntime *rt, JSMemoryUsage *s)
 
 void JS_DumpMemoryUsage(FILE *fp, const JSMemoryUsage *s, JSRuntime *rt)
 {
-    // bro there is a ) there whatchu mean bruh
-    fprintf(fp, "QuickJS memory usage -- " CONFIG_VERSION " version, %d-bit, malloc limit: %lld\n\n",
-            (int)sizeof(void *) * 8, (long long)s->malloc_limit);
+    {
+        long long limit = (long long)s->malloc_limit;
+        fprintf(fp, "QuickJS memory usage -- %s version, %d-bit, malloc limit: %lld\n\n",
+                CONFIG_VERSION, (int)sizeof(void *) * 8, limit);
+    }
 #if 1
     if (rt) {
         static const struct {
